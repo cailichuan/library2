@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.LoginMapper">
+
+    <resultMap id="rLoginUserMap" type="LoginUser">
+        <result property="userId" column="u_id"></result>
+        <result property="account" column="account"></result>
+    </resultMap>
+
+
+    <select id="countUserNameAndPasswordByMap" parameterType="Map" resultType="int">
+        select count(*)
+        from library.user_account
+        where account=#{account}
+        and password = #{password}
+    </select>
+
+    <select id="countAdminNameAndPasswordByMap" parameterType="Map" resultType="int">
+        select count(*)
+        from library.admin_account
+        where account=#{account}
+        and password = #{password}
+    </select>
+
+    <select id="countAdminByAccount" parameterType="String" resultType="int">
+        select count(*)
+        from library.admin_account
+        where account=#{account};
+    </select>
+
+    <select id="selectLoginUserByMap" parameterType="Map" resultMap="rLoginUserMap">
+        select u_id,
+        account
+        from library.user_account
+        where account=#{account}
+        and password = #{password}
+    </select>
+
+    <select id="countUserAccount" parameterType="String" resultType="Integer">
+        select count(*)
+        from library.user_account
+        where account=#{account}
+    </select>
+    <insert id="insertLoginUser" parameterType="LoginUser">
+        insert into library.user_account (u_id,account,password)
+        values (#{userId},#{account},#{password})
+    </insert>
+
+
+
+
+</mapper>

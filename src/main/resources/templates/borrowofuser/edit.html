@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Dashboard Template for Bootstrap</title>
+  <!-- Bootstrap core CSS -->
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+
+
+
+  <script th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+  <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+  <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <style type="text/css">
+    /* Chart.js */
+
+    @-webkit-keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+      to {
+        opacity: 1
+      }
+    }
+
+    .chartjs-render-monitor {
+      -webkit-animation: chartjs-render-animation 0.001s;
+      animation: chartjs-render-animation 0.001s;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="~{commons/commons::topbar}"></div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div th:replace="~{commons/commons::sidebar(active='borrowofuser.html')}"></div>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div th:if="${not #strings.isEmpty(msg)}" class="alert alert-warning alert-dismissible" role="alert" >
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" id="show">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>警告!</strong><span th:text="${msg}"></span>
+      </div>
+      <h2   style="text-align: center">编辑书本信息</h2>
+<!--      非搜索页-->
+      <form th:if="${editInfo}" th:action="@{'/admin/UBI/'+${page}+'/edit/submit'}" method="get">
+        <div class="form-group" style="width: 40%;margin-left: 30%">
+          <h3><span class="label label-default">id</span></h3>
+          <input type="text" class="form-control" th:value="${editInfo.getId()}" name="id" readonly>
+        </div>
+        <div th:if="${editInfo.getBorrow()==1}">
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">用户id</span></h3>
+          <input type="text" class="form-control" th:value="${editInfo.getUserId()}" name="userId">
+        </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">图书id</span></h3>
+            <input type="text" class="form-control" th:value="${editInfo.getBookId()}" name="bookId">
+          </div>
+        </div>
+
+        <div th:if="${editInfo.getBorrow()==0}">
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">用户id</span></h3>
+            <input type="text" class="form-control" th:value="${editInfo.getUserId()}" name="userId" readonly>
+          </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">图书id</span></h3>
+            <input type="text" class="form-control" th:value="${editInfo.getBookId()}" name="bookId" readonly>
+          </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">旧日期</span></h3>
+            <input type="text" class="form-control" th:value="${#dates.format(editInfo.getDate(),'yyyy-MM-dd HH:mm:ss')}" name="originalDate" readonly >
+          </div>
+        </div>
+
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">借还</span></h3>
+          <input type="text" class="form-control" th:value="${editInfo.getBorrow()==1? '借':'还'}"  readonly>
+          <input type="text" th:value="${editInfo.getBorrow()}" hidden="hidden" name="borrow">
+        </div>
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">行为数量</span></h3>
+          <input type="text" class="form-control" th:value="${editInfo.getActNumber()}" name="actNumber">
+        </div>
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">时间</span></h3>
+          <input type="text" class="form-control" th:value="${#dates.format(editInfo.getDate(),'yyyy-MM-dd HH:mm:ss')}" name="date">
+        </div>
+
+        <p style="text-align: center">
+          <button type="submit" class="btn btn-info">提交</button>
+        </p>
+
+      </form>
+<!--      搜索页-->
+      <form th:if="${selectEditInfo}" th:action="@{'/admin/UBI/'+${page}+'/select/'+${returnPage}+'/edit/submit'}" method="get">
+        <div class="form-group" style="width: 40%;margin-left: 30%">
+          <h3><span class="label label-default">id</span></h3>
+          <input type="text" class="form-control" th:value="${selectEditInfo.getId()}" name="id" readonly>
+        </div>
+        <div th:if="${selectEditInfo.getBorrow()==1}">
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">用户id</span></h3>
+            <input type="text" class="form-control" th:value="${selectEditInfo.getUserId()}" name="userId">
+          </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">图书id</span></h3>
+            <input type="text" class="form-control" th:value="${selectEditInfo.getBookId()}" name="bookId">
+          </div>
+        </div>
+
+        <div th:if="${selectEditInfo.getBorrow()==0}">
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">用户id</span></h3>
+            <input type="text" class="form-control" th:value="${selectEditInfo.getUserId()}" name="userId" readonly>
+          </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">图书id</span></h3>
+            <input type="text" class="form-control" th:value="${selectEditInfo.getBookId()}" name="bookId" readonly>
+          </div>
+          <div class="form-group" style="width: 40%;margin-left: 30%" >
+            <h3><span class="label label-default">旧日期</span></h3>
+            <input type="text" class="form-control" th:value="${#dates.format(selectEditInfo.getDate(),'yyyy-MM-dd HH:mm:ss')}" name="originalDate" readonly >
+          </div>
+        </div>
+
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">借还</span></h3>
+          <input type="text" class="form-control" th:value="${selectEditInfo.getBorrow()==1? '借':'还'}"  readonly>
+          <input type="text" th:value="${selectEditInfo.getBorrow()}" hidden="hidden" name="borrow">
+        </div>
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">行为数量</span></h3>
+          <input type="text" class="form-control" th:value="${selectEditInfo.getActNumber()}" name="actNumber">
+        </div>
+
+
+        <div class="form-group" style="width: 40%;margin-left: 30%" >
+          <h3><span class="label label-default">时间</span></h3>
+          <input type="text" class="form-control" th:value="${#dates.format(selectEditInfo.getDate(),'yyyy-MM-dd HH:mm:ss')}" name="date">
+        </div>
+
+        <p style="text-align: center">
+          <button type="submit" class="btn btn-info">提交</button>
+        </p>
+
+      </form>
+
+
+
+
+
+    </main>
+  </div>
+</div>
+
+
+</body>
+<script>
+
+  function hideOrIn (){
+    $('#show').removeClass('hide').addClass('in').addClass('fade');
+
+  }
+</script>
+</html>

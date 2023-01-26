@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.BookMapper">
+
+    <resultMap id="rBookMap" type="Book">
+        <result property="id" column="id"></result>
+        <result property="title" column="title"></result>
+        <result property="author" column="author"></result>
+        <result property="kindNumber" column="classid"></result>
+        <result property="number" column="number"></result>
+        <result property="kindString" column="classname"></result>
+        <result property="imgFormat" column="img_format"></result>
+    </resultMap>
+    
+    <parameterMap id="pBookMap" type="Book">
+        <parameter property="id" resultMap="rBookMap"></parameter>
+        <parameter property="title" resultMap="rBookMap"></parameter>
+        <parameter property="author" resultMap="rBookMap"></parameter>
+        <parameter property="kindNumber" resultMap="rBookMap"></parameter>
+        <parameter property="number" resultMap="rBookMap"></parameter>
+        <parameter property="kindString" resultMap="rBookMap"></parameter>
+    </parameterMap>
+
+
+
+<!--    插入一条数据-->
+    <insert id="addBook" parameterType="Book">
+        insert into library.book (id,title,author,class,number,img_format) values (#{id},#{title},#{author},#{kindNumber},#{number},#{imgFormat})
+    </insert>
+
+<!--&lt;!&ndash;    判断id是否存在&ndash;&gt;-->
+<!--    <select id="verifyExistenceById" resultType="Ingeter">-->
+<!--        select 1 from d-->
+<!--    </select>-->
+<!--    获取该表所有数据-->
+    <select id="selectAll" resultMap="rBookMap">
+        select b.id as id,b.title as title,b.author,b.number,b.class as classid,c.classname as classname
+        from book as b
+        left join class as c
+        on b.class=c.id;
+    </select>
+<!--    获取该表数据总数-->
+    <select id="getDataNumber" resultType="int">
+        select count(*) from library.book;
+    </select>
+<!--    根据页数查询-->
+    <select id="selectByPage" parameterType="map" resultMap="rBookMap">
+        select b.id as id,b.title as title,b.author,b.number,b.class as classid,c.classname as classname
+        from book as b
+        left join class as c
+        on b.class=c.id
+        limit #{offset} , #{rows};
+    </select>
+<!--    根据id查询-->
+    <select id="selectBookById" parameterType="int" resultMap="rBookMap">
+        select b.id as id,b.title as title,b.author,b.number,b.class as classid,c.classname as classname
+        from book as b
+        left join class as c
+        on b.class=c.id
+        <where>
+            b.id=#{id};
+        </where>
+    </select>
+
+    <select id="selectNumberById" parameterType="String" resultType="int">
+        select number
+        from library.book
+        where id = #{id}
+    </select>
+
+    <select id="selectTitleById" parameterType="String" resultType="String">
+        select title
+        from library.book
+        where id=#{id}
+    </select>
+
+
+<!--获取搜索框搜索数据的数量-->
+    <select id="countSelectBookAny" parameterType="map" resultType="int">
+        select count(*) from library.book
+        <where>
+            <choose>
+                <when test="title!=null">
+                    title like "%"#{title}"%"
+                </when>
+                <when test="author!=null">
+                    author like "%"#{author}"%"
+                </when>
+                <otherwise>
+                    title like "%"#{noKindSelectText}"%"
+                    or
+                    author like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+<!--    搜索框搜索数据-->
+    <select id="selectBookByAny" parameterType="map" resultMap="rBookMap">
+        select * from library.book
+        <where>
+            <choose>
+                <when test="title!=null">
+                    title like "%"#{title}"%"
+                </when>
+                <when test="author!=null">
+                    author like "%"#{author}"%"
+                </when>
+                <otherwise>
+                    title like "%"#{noKindSelectText}"%"
+                    or
+                    author like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+        limit #{offset} , #{rows};
+    </select>
+    <select id="countSelectBookById" parameterType="String" resultType="int">
+        select count(*) from library.book where id=#{id};
+    </select>
+
+    <select id="selectFormatById" parameterType="String" resultType="String">
+        select img_format from library.book where id=#{id}
+    </select>
+
+
+
+<!--    修改书本信息-->
+    <update id="updateBook" parameterType="Book">
+        update book
+        <set>
+            <if test="title!=null">
+                title=#{title},
+            </if>
+            <if test="author!=null">
+                author=#{author},
+            </if>
+            <if test="number!=null">
+                number=#{number},
+            </if>
+            <if test="kindNumber!=null">
+                class=#{kindNumber},
+            </if>
+            <if test="imgFormat!=null">
+                img_format=#{imgFormat}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+<!--删除书本信息-->
+    <delete id="deleteBook" parameterType="String">
+        delete from library.book where id=#{id};
+    </delete>
+
+
+
+
+
+</mapper>

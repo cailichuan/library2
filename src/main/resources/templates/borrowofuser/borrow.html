@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Dashboard Template for Bootstrap</title>
+	<!-- Bootstrap core CSS -->
+	<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link th:href="@{/css/dashboard.css}" rel="stylesheet">
+	<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+
+
+
+	<script th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>
+	<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+	<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+<!--	<style type="text/css">-->
+<!--		/* Chart.js */-->
+
+<!--		@-webkit-keyframes chartjs-render-animation {-->
+<!--			from {-->
+<!--				opacity: 0.99-->
+<!--			}-->
+<!--			to {-->
+<!--				opacity: 1-->
+<!--			}-->
+<!--		}-->
+
+<!--		@keyframes chartjs-render-animation {-->
+<!--			from {-->
+<!--				opacity: 0.99-->
+<!--			}-->
+<!--			to {-->
+<!--				opacity: 1-->
+<!--			}-->
+<!--		}-->
+
+<!--		.chartjs-render-monitor {-->
+<!--			-webkit-animation: chartjs-render-animation 0.001s;-->
+<!--			animation: chartjs-render-animation 0.001s;-->
+<!--		}-->
+<!--	</style>-->
+</head>
+
+	<body>
+	<div th:replace="~{commons/commons::topbar}"></div>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div th:replace="~{commons/commons::sidebar(active='borrowofuser.html')}"></div>
+
+
+				<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+					<h2 id="title">用户借阅信息</h2>
+<!--					警告框-->
+					<div th:if="${not #strings.isEmpty(wmsg)}" class="alert alert-warning alert-dismissible" role="alert" >
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close" id="warning">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<strong>警告!</strong><span th:text="${wmsg}"></span>
+					</div>
+
+<!--					提示框-->
+					<div th:if="${not #strings.isEmpty(smsg)}" class="alert alert-success alert-dismissible" role="alert" >
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close" id="success">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<strong>提示:</strong><span th:text="${smsg}"></span>
+					</div>
+
+<!--					搜索框-->
+				 	<form th:if="${borrowlist}" th:action="@{'/admin/UBI/'+${pageInput.getThisPage()}+'/select/1'}">
+						<select class="form-control " style="width: 10%;height: 35px;display: inline-block" name="selectKindValue">
+							<option value="0" selected="selected"></option>
+							<option value="1">用户名</option>
+							<option value="2">图书名</option>
+						</select>
+						<div class="col-lg-6" style="display: inline-block;width: 20%;">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Search for..." name="selectTxt">
+								<span class="input-group-btn">
+        							<button class="btn btn-default" type="submit" >搜索</button>
+      							</span>
+							</div><!-- /input-group -->
+						</div><!-- /.col-lg-6 -->
+
+					</form>
+
+<!--					非搜索模式图书信息-->
+					<div th:if="${borrowlist}" class="table-responsive" >
+							<table class="table table-striped table-sm">
+								<thead>
+								<tr>
+									<th>id</th>
+									<th>用户id</th>
+									<th>用户名</th>
+									<th>图书id</th>
+									<th>图书名</th>
+									<th>借/还</th>
+									<th>行为数量</th>
+									<th>日期</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr th:each="borrow:${borrowlist}">
+									<td th:text="${borrow.getId()}"></td>
+									<td th:text="${borrow.getUserId()}"></td>
+									<td th:text="${borrow.getUserName()}"></td>
+									<td th:text="${borrow.getBookId()}"></td>
+									<td ><a th:text="${borrow.getBookTitle()}" th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+'/img?id='+${borrow.getBookId()}+'&active=borrowofuser.html'}"></a></td>
+									<td th:text="${borrow.getBorrow()==1?'借':'还'}"></td>
+									<th th:text="${borrow.getActNumber()}"></th>
+									<td th:text="${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}"></td>
+									<td>
+ 										<button  th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+
+ 										'/edit?id='+${borrow.getId()}+
+ 										'&borrow='+${borrow.getBorrow()}}">编辑</a></button>
+										<button  th:if="${borrow.getBorrow()==0}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+
+ 										'/edit?id='+${borrow.getId()}+
+ 										'&borrow='+${borrow.getBorrow()}+
+										'&date='+${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}}" >编辑</a></button>
+
+										<button  th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+
+ 										'/revert?id='+${borrow.getId()}+
+ 										'&userId='+${borrow.getUserId()}+
+ 										'&bookId='+${borrow.getBookId()}}">还书</a></button>
+
+										<button th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-danger"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+
+										'/delete/submit?id='+
+										${borrow.getId()}+
+										'&borrow='+${borrow.getBorrow()}+
+										'&bookId='+${borrow.getBookId()}+
+										'&actNumber='+${borrow.getActNumber()}}">删除</a></button>
+
+										<button th:if="${borrow.getBorrow()==0}" class="btn btn-sm btn-danger"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+
+										'/delete/submit?id='+
+										${borrow.getId()}+
+										'&date='+${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}+
+										'&borrow='+${borrow.getBorrow()}+
+										'&bookId='+${borrow.getBookId()}+
+										'&actNumber='+${borrow.getActNumber()}}">删除</a></button>
+
+									</td>
+								</tr>
+
+								</tbody>
+
+
+							</table>
+							<h1   style="text-align: center"> <button class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${pageInput.getThisPage()}+'/add' }">添加借书信息</a></button></h1>
+						</div>
+					<h1   th:if="${borrowlist==null}" style="text-align: center"> <button class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/1/add' }">添加借书信息</a></button></h1>
+
+<!--					搜索模式图书信息-->
+					<div th:if="${sBorrows}" class="table-responsive" >
+					<table class="table table-striped table-sm">
+						<thead>
+						<tr>
+							<th>id</th>
+							<th>用户id</th>
+							<th>用户名</th>
+							<th>图书id</th>
+							<th>图书名</th>
+							<th>借/还</th>
+							<th>行为数量</th>
+							<th>日期</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="borrow:${sBorrows}">
+							<td th:text="${borrow.getId()}"></td>
+							<td th:text="${borrow.getUserId()}"></td>
+							<td th:text="${borrow.getUserName()}"></td>
+							<td th:text="${borrow.getBookId()}"></td>
+							<td ><a th:text="${borrow.getBookTitle()}" th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+'img?id='+${borrow.getBookId()}+'&active=borrowofuser.html'}"></a></td>
+							<td th:text="${borrow.getBorrow()==1?'借':'还'}"></td>
+							<th th:text="${borrow.getActNumber()}"></th>
+							<td th:text="${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}"></td>
+							<td>
+								<button  th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+
+ 										'/edit?id='+${borrow.getId()}+
+ 										'&borrow='+${borrow.getBorrow()}}">编辑</a></button>
+								<button  th:if="${borrow.getBorrow()==0}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+
+ 										'/edit?id='+${borrow.getId()}+
+ 										'&borrow='+${borrow.getBorrow()}+
+										'&date='+${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}}" >编辑</a></button>
+
+								<button  th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-primary"><a th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+
+ 										'/revert?id='+${borrow.getId()}+
+ 										'&userId='+${borrow.getUserId()}+
+ 										'&bookId='+${borrow.getBookId()}}">还书</a></button>
+
+								<button th:if="${borrow.getBorrow()==1}" class="btn btn-sm btn-danger"><a th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+
+										'/delete/submit?id='+${borrow.getId()}+
+										'&borrow='+${borrow.getBorrow()}+
+										'&bookId='+${borrow.getBookId()}+
+										'&actNumber='+${borrow.getActNumber()}}">删除</a></button>
+
+
+								<button th:if="${borrow.getBorrow()==0}" class="btn btn-sm btn-danger"><a th:href="@{'/admin/UBI/'+${bPage}+'/select/'+${pageInput.getThisPage()}+
+										'/delete/submit?id='+${borrow.getId()}+
+										'&date='+${#dates.format(borrow.getDate(),'yyyy-MM-dd HH:mm:ss')}+
+										'&borrow='+${borrow.getBorrow()}+
+										'&bookId='+${borrow.getBookId()}+
+										'&actNumber='+${borrow.getActNumber()}}">删除</a></button>
+
+									</td>
+								</tr>
+
+							</tbody>
+
+
+						</table>
+
+					</div>
+
+<!--						非搜索模式翻页插件-->
+					<nav  th:if="${borrowlist}" aria-label="Page navigation"  >
+						<ul class="pagination" >
+							<li th:if="${pageInput.getThisPage()!=1}">
+								<a th:href="@{${pageInput.getLastPage()}}" aria-label="disabled">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+
+<!--							<li class="active"><a href="#" >1</a></li>-->
+<!--							<div th:each=""> -->
+							<li  th:each="pageNumber:${pageInput.getPageInput()}" th:class="${pageNumber==pageInput.getThisPage()?'active':''}"><a   th:href="@{${pageNumber}}" th:text="${pageNumber}"></a></li>
+<!--							<li><a href="#">3</a></li>-->
+<!--							<li><a href="#">4</a></li>-->
+<!--							<li><a href="#">5</a></li>-->
+<!--							</div>-->
+							<li th:if="${pageInput.getThisPage()!=pageInput.getMaxPage()}">
+								<a th:href="@{${pageInput.getNextPage()}}" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+<!--					搜索模式翻页插件-->
+					<nav  th:if="${sBorrows}" aria-label="Page navigation"  >
+						<ul class="pagination" >
+							<li th:if="${pageInput.getThisPage()!=1}">
+								<a th:href="@{${pageInput.getLastPage()}+'/?selectKindValue='+${selectKindValue}+'&selectTxt='+${selectTxt}}" aria-label="disabled">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+
+
+							<li  th:each="pageNumber:${pageInput.getPageInput()}" th:class="${pageNumber==pageInput.getThisPage()?'active':''}"><a   th:href="${pageNumber}+'/?selectKindValue='+${selectKindValue}+'&selectTxt='+${selectTxt}" th:text="${pageNumber}"></a></li>
+
+							<li th:if="${pageInput.getThisPage()!=pageInput.getMaxPage()}">
+								<a th:href="@{${pageInput.getNextPage()}+'/?selectKindValue='+${selectKindValue}+'&selectTxt='+${selectTxt}}" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+
+				</main>
+			</div>
+		</div>
+
+
+		<!-- Bootstrap core JavaScript
+    ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+
+
+
+	</body>
+	<script>
+		function hideOrIn (){
+			$('#warning').removeClass('hide').addClass('in').addClass('fade');
+			$('#success').removeClass('hide').addClass('in').addClass('fade');
+
+		}
+	</script>
+
+</html>

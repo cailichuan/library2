@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.BorrowOfBookMapper">
+    <resultMap id="rborrowOfBookMap" type="BorrowOfBook">
+        <result property="id" column="id"></result>
+        <result property="bookTitle" column="booktitle"></result>
+        <result property="gross" column="gross"></result>
+        <result property="stock" column="stock"></result>
+        <result property="lend" column="lend"></result>
+    </resultMap>
+
+
+    <insert id="insertBorrow" parameterType="BorrowOfBook">
+        insert into library.borrow_book
+        (id,gross,stock,lend)
+        values
+        (#{id},#{gross},#{stock},#{lend})
+    </insert>
+    <update id="updateBorrowByMap" parameterType="Map">
+        update library.borrow_book
+        <set>
+
+            <if test="gross!=null">
+                gross=#{gross},
+            </if>
+            <if test="stock!=null">
+                stock=#{stock},
+            </if>
+            <if test="lend!=null">
+                lend = #{lend}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <select id="countBorrowById" parameterType="String" resultType="int">
+        select count(*)
+        from borrow_book
+        where id = #{id}
+    </select>
+
+    <select id="getDataNumber" resultType="int">
+        select count(*) from library.borrow_book;
+    </select>
+
+    <select id="selectBorrowByPage" parameterType="Map" resultMap="rborrowOfBookMap">
+        select b_b.id as id,
+        b.title as booktitle,
+        b_b.gross as gross,
+        b_b.stock as stock,
+        b_b.lend as lend
+        from library.borrow_book as b_b
+        left join library.book as b
+        on b_b.id = b.id
+        limit #{offset} , #{rows};
+    </select>
+
+    <select id="selectLendById" parameterType="String" resultType="Integer">
+        select ifnull(lend,0) as lend
+        from library.borrow_book
+        where id=#{id}
+
+    </select>
+
+    <select id="selectStockById" parameterType="String" resultType="int">
+        select stock
+        from borrow_book
+        where id=#{id}
+    </select>
+    <select id="selectBorrowByAny" parameterType="Map" resultMap="rborrowOfBookMap">
+        select b_b.id as id,
+        b.title as booktitle,
+        b_b.gross as gross,
+        b_b.stock as stock,
+        b_b.lend as lend
+        from library.borrow_book as b_b
+        left join library.book as b
+        on b_b.id = b.id
+        where b.title like "%"#{bookTitle}"%"
+        limit #{offset} , #{rows};
+    </select>
+
+    <select id="countSelectBorrowAny" parameterType="map" resultType="int">
+        select count(*)
+        from library.borrow_book as b_b
+        left join library.book as b
+        on b_b.id = b.id
+        where b.title like "%"#{bookTitle}"%"
+    </select>
+
+    <delete id="deleteBorrowById" parameterType="String">
+        delete
+        from library.borrow_book
+        where id= #{id}
+    </delete>
+
+</mapper>

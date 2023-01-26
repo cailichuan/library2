@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Dashboard Template for Bootstrap</title>
+  <!-- Bootstrap core CSS -->
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+
+
+
+  <script th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>
+  <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+  <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+  <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <style type="text/css">
+    /* Chart.js */
+
+    @-webkit-keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+      to {
+        opacity: 1
+      }
+    }
+
+    .chartjs-render-monitor {
+      -webkit-animation: chartjs-render-animation 0.001s;
+      animation: chartjs-render-animation 0.001s;
+    }
+  </style>
+</head>
+
+<body>
+<h2   style="text-align: center">注册</h2>
+
+<form  th:if="${type==null or type==0}" method="post" th:action="@{/register/getVC}" >
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">邮箱</span>&nbsp;&nbsp;<button type="submit" class="btn btn-sm btn-primary">验证</button></h3>
+    <input type="email" class="form-control"  name="mail">
+
+  </div>
+
+
+</form>
+
+<p th:if="${emsg}"  th:text="${emsg}" style="color: green;text-align: center"></p>
+<p th:if="${wmsg}"  th:text="${wmsg}" style="color: red;text-align: center"></p>
+
+<form  th:if="${type==1}" method="post" th:action="@{/register/submit}" >
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">邮箱</span></h3>
+    <input type="email" class="form-control"  name="mail" th:value="${mail}" readonly>
+  </div>
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">验证码</span></h3>
+    <input type="text" class="form-control"  name="verificationCode" th:value="${verificationCode}">
+  </div>
+
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">账号名</span></h3>
+    <input type="text" class="form-control"   name="account" th:value="${loginUser.getAccount()}">
+  </div>
+
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">密码</span></h3>
+    <input type="password" class="form-control" name="password" th:value="${loginUser.getPassword()}">
+  </div>
+
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+  <h3><span class="label label-default">姓名</span></h3>
+  <input type="text" class="form-control"   name="name" th:value="${user.getName()}">
+</div>
+
+  <div class="form-group" style="width: 40%;margin-left: 30%" >
+    <h3><span class="label label-default">电话</span></h3>
+    <input type="text" class="form-control"   name="phoneNumber" th:value="${user.getPhoneNumber()}">
+  </div>
+
+
+
+  <p style="text-align: center">
+    <button  type="submit" class="btn btn-info">提交</button>
+  </p>
+
+</form>
+
+
+</body>
+
+</html>

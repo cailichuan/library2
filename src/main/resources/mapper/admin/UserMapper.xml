@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.UserMapper">
+    <resultMap id="rUserMap" type="User">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="phoneNumber" column="t_n"></result>
+    </resultMap>
+<!--    insert into library.book (id,title,author,class,number) values (#{id},#{title},#{author},#{kindNumber},#{number})-->
+    <insert id="insertUser" parameterType="User">
+        insert into library.user (id,name,t_n) values (#{id},#{name},#{phoneNumber})
+    </insert>
+
+
+
+    <select id="selectUserByPage" parameterType="map" resultMap="rUserMap">
+        select * from library.user limit #{offset} , #{rows}
+    </select>
+
+    <select id="getDataNumber" resultType="int">
+        select count(*) from library.user;
+    </select>
+
+    <select id="selectUserById" parameterType="String" resultMap="rUserMap">
+        select * from library.user where id=#{id};
+    </select>
+
+    <select id="countSelectUserById" parameterType="String" resultType="int">
+        select count(*) from library.user where id=#{id};
+    </select>
+
+    <!--获取搜索框搜索数据的数量-->
+    <select id="countSelectUserAny" parameterType="map" resultType="int">
+        select count(*) from library.user
+        <where>
+            <choose>
+                <when test="name!=null">
+                    name like "%"#{name}"%"
+                </when>
+                <when test="phoneNumber!=null">
+                    t_n like "%"#{phoneNumber}"%"
+                </when>
+                <otherwise>
+                    name like "%"#{noKindSelectText}"%"
+                    or
+                    t_n like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <!--    搜索框搜索数据-->
+    <select id="selectUserByAny" parameterType="map" resultMap="rUserMap">
+        select * from library.user
+        <where>
+            <choose>
+                <when test="name!=null">
+                    name like "%"#{name}"%"
+                </when>
+                <when test="phoneNumber!=null">
+                    t_n like "%"#{phoneNumber}"%"
+                </when>
+                <otherwise>
+                    name like "%"#{noKindSelectText}"%"
+                    or
+                    t_n like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+        limit #{offset} , #{rows};
+    </select>
+
+    <update id="updateUser" parameterType="User">
+            update library.user
+            <set>
+                <if test="name!=null">
+                    name=#{name},
+                </if>
+                <if test="phoneNumber!=null">
+                    t_n=#{phoneNumber},
+                </if>
+            </set>
+            where id=#{id}
+    </update>
+
+    <delete id="deleteUserById" parameterType="String">
+        delete from library.user where id=#{id};
+    </delete>
+
+
+
+</mapper>

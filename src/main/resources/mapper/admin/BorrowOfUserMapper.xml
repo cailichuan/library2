@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.BorrowOfUserMapper">
+
+    <resultMap id="rborrowOfUserMap" type="BorrowOfUser">
+        <result property="id" column="id"></result>
+        <result property="date" column="date"></result>
+        <result property="userId" column="u_id"></result>
+        <result property="userName" column="username"></result>
+        <result property="bookId" column="b_id"></result>
+        <result property="bookTitle" column="booktitle"></result>
+        <result property="borrow" column="borrow"></result>
+        <result property="actNumber" column="act_number"></result>
+    </resultMap>
+
+    <insert id="insertBorrow" parameterType="BorrowOfUser">
+        insert into library.borrow_user
+        (id,u_id,b_id,borrow,act_number,date)
+        values
+        (#{id},#{userId},#{bookId},#{borrow},#{actNumber},#{date})
+    </insert>
+
+
+    <select id="getDataNumber" resultType="int">
+        select count(*) from library.borrow_user;
+    </select>
+
+    <select id="selectByPage" parameterType="map" resultMap="rborrowOfUserMap">
+        select b_u.id as id,
+        b_u.u_id as u_id,
+        u.name as username,
+        b_u.b_id as b_id,
+        b.title as booktitle,
+        b_u.borrow as borrow,
+        b_u.act_number as act_number,
+        b_u.date as date
+        from library.borrow_user as b_u
+        left join library.user as u
+        on b_u.u_id=u.id
+        left join library.book as b
+        on b_u.b_id=b.id
+        order by b_u.id,b_u.borrow desc
+        limit #{offset} , #{rows};
+    </select>
+
+    <select id="selectBorrowByMap" parameterType="map" resultMap="rborrowOfUserMap">
+        select b_u.id as id,
+        b_u.u_id as u_id,
+        b_u.b_id as b_id,
+        b_u.borrow as borrow,
+        b_u.act_number as act_number,
+        b_u.date as date
+
+        from library.borrow_user as b_u
+        left join library.user as u
+        on b_u.u_id = u.id
+        left join library.book as b
+        on b_u.b_id = b.id
+        <where>
+            b_u.id = #{id}
+            and b_u.borrow = #{borrow}
+            <if test="date!=null">
+                and date = #{date}
+            </if>
+        </where>
+
+
+    </select>
+
+    <select id="countBorrowByIdAndBorrwMap" parameterType="map" resultType="int">
+        select count(*)
+        from library.borrow_user
+        where id=#{id}
+        and borrow=#{borrow}
+    </select>
+
+    <select id="selectUserNameAndBookTitleById" parameterType="String" resultMap="rborrowOfUserMap">
+        select b.title as booktitle,
+        u.name as username
+        from library.borrow_user as b_u
+        left join library.user as u
+        on b_u.u_id = u.id
+        left join library.book as b
+        on b_u.b_id = b.id
+        where b_u.id = #{id}
+    </select>
+
+    <select id="selectActNumberByIdAndBorrowMap" parameterType="Map" resultType="Integer">
+        select act_number
+        from borrow_user
+        where
+            id=#{id}
+            and borrow=#{borrow};
+    </select>
+
+    <select id="selectDateByIdAndBorrowMap" parameterType="Map" resultType="Date">
+        select date
+        from library.borrow_user
+        where id=#{id}
+        and borrow=#{borrow};
+    </select>
+
+    <select id="selectBorrowByAny" parameterType="map" resultMap="rborrowOfUserMap">
+        select b_u.id as id,
+        b_u.u_id as u_id,
+        u.name as username,
+        b_u.b_id as b_id,
+        b.title as booktitle,
+        b_u.borrow as borrow,
+        b_u.act_number as act_number,
+        b_u.date as date
+        from library.borrow_user as b_u
+        left join library.book as b
+        on b_u.b_id = b.id
+        left join library.user as u
+        on b_u.u_id = u.id
+        <where>
+            <choose>
+                <when test="userName!=null">
+                    u.name like "%"#{userName}"%"
+                </when>
+                <when test="bookTitle!=null">
+                    b.title like "%"#{bookTitle}"%"
+                </when>
+                <otherwise>
+                    u.name like "%"#{noKindSelectText}"%"
+                    or
+                    b.title like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+        order by b_u.id,b_u.borrow desc
+        limit #{offset} , #{rows};
+    </select>
+
+    <select id="countSelectBorrowAny" parameterType="map" resultType="int">
+        select count(*)
+        from library.borrow_user as b_u
+        left join library.book as b
+        on b_u.b_id = b.id
+        left join library.user as u
+        on b_u.u_id = u.id
+        <where>
+            <choose>
+                <when test="userName!=null">
+                    u.name like "%"#{userName}"%"
+                </when>
+                <when test="bookTitle!=null">
+                    b.title like "%"#{bookTitle}"%"
+                </when>
+                <otherwise>
+                    u.name like "%"#{noKindSelectText}"%"
+                    or
+                    b.title like "%"#{noKindSelectText}"%"
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="selectBookIdById" parameterType="String" resultType="String">
+        select b_id
+        from library.borrow_user
+        where id=#{id}
+        limit 0 ,1;
+    </select>
+
+    <select id="selectIdByMap" parameterType="Map" resultType="String">
+        select id
+        from borrow_user
+        where borrow=#{borrow}
+        and u_id = #{userId}
+    </select>
+
+    <update id="updateBorrowByMap" parameterType="Map">
+        update library.borrow_user
+        <set>
+            <if test="userId!=null">
+                u_id = #{userId},
+            </if>
+            <if test="bookId!=null">
+                b_id = #{bookId},
+            </if>
+            <if test="actNumber!=null">
+                act_number = #{actNumber},
+            </if>
+            <if test="date!=null">
+                date = #{date}
+            </if>
+        </set>
+
+        <where>
+
+            id = #{id}
+            <if test="borrow!=null">
+                and borrow = #{borrow}
+            </if>
+            <if test="originalDate!=null">
+                and date = #{originalDate}
+            </if>
+        </where>
+    </update>
+
+    <delete id="deleteBorrowByMap" parameterType="Map">
+        delete from library.borrow_user
+        <where>
+            id = #{id}
+            <if test="borrow!=null">
+                and borrow = #{borrow}
+            </if>
+            <if test="date!=null">
+                and date = #{date}
+            </if>
+        </where>
+    </delete>
+    
+    <delete id="deleteBorrowByBookId" parameterType="String">
+        delete
+        from borrow_user
+        where b_id = #{bookId}
+    </delete>
+</mapper>

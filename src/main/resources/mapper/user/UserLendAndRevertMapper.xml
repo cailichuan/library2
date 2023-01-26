@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.user.UserLendAndRevertMapper">
+    <resultMap id="rborrowAndLendBookMap" type="UserLendAndRevertBook">
+        <result property="id" column="id"></result>
+        <result property="bookId" column="bookId"></result>
+
+        <result property="bookTitle" column="book_title"></result>
+        <result property="author" column="author"></result>
+        <result property="borrowOrLend" column="borrow_or_lend"></result>
+        <result property="stock" column="stock"></result>
+        <result property="actNumber" column="act_number"></result>
+        <result property="actDate" column="act_date"></result>
+    </resultMap>
+
+    <select id="selectByPage" parameterType="Map" resultMap="rborrowAndLendBookMap">
+        select b_u.id as id,
+        b.id as bookId,
+        b.title as book_title,
+        b.author as author,
+        b_u.borrow as borrow_or_lend,
+        ifnull(b_b.stock,b.number) as stock,
+        b_u.act_number as act_number,
+        b_u.date as act_date
+
+        from library.borrow_user as b_u
+
+        left join library.book as b
+        on b.id = b_u.b_id
+
+        left join library.borrow_book as b_b
+        on b_b.id = b_u.b_id
+
+        where b_u.u_id = #{userId}
+        order by b_u.id,b_u.borrow desc
+
+        limit #{offset} , #{rows};
+
+    </select>
+
+    <select id="getDataNumber" parameterType="String" resultType="int">
+        select  count(*)
+
+        from library.borrow_user as b_u
+
+        left join library.book as b
+        on b.id = b_u.b_id
+
+        left join library.borrow_book as b_b
+        on b_b.id = b_u.b_id
+
+        where b_u.u_id = #{userId}
+    </select>
+
+
+
+
+</mapper>

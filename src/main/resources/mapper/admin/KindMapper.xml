@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.admin.KindMapper">
+    <resultMap id="KindMap" type="Kind">
+        <result property="kind" column="classname"></result>
+    </resultMap>
+
+    <select id="selectAllKind" resultMap="KindMap">
+        select * from library.class;
+    </select>
+    <select id="countKindById" resultType="int">
+        select count(id)
+        from library.class
+        where id = #{id}
+
+
+    </select>
+
+</mapper>

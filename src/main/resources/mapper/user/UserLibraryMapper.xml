@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cai.library.mapper.user.UserLibraryMapper">
+    <resultMap id="rlibraryBookMap" type="LibraryBook">
+        <result property="id" column="id"></result>
+        <result property="bookTitle" column="book_title"></result>
+        <result property="author" column="author"></result>
+        <result property="kindString" column="class_name"></result>
+        <result property="stock" column="stock"></result>
+    </resultMap>
+
+    <select id="selectLibraryBookByPage" parameterType="Map" resultMap="rlibraryBookMap">
+        select b.id as id,
+        b.title as book_title,
+        b.author as author,
+        ifnull(b_b.stock,b.number) as stock,
+        c.classname as class_name
+        from library.book as b
+        left join library.borrow_book as b_b
+        on b.id = b_b.id
+        left join library.class as c
+        on b.class = c.id
+        <where>
+            <if test="kindIndex!=null">
+                b.class = #{kindIndex}
+            </if>
+        </where>
+        limit #{offset} , #{rows};
+
+    </select>
+
+    <select id="getDataNumber" parameterType="int" resultType="int">
+        select count(b.id)
+        from library.book as b
+        left join library.borrow_book as b_b
+        on b.id = b_b.id
+        left join library.class as c
+        on c.id = b.class
+        <where>
+            <if test="kindIndex gt -1">
+                b.class = #{kindIndex}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectLibraryBookByAny" parameterType="Map" resultMap="rlibraryBookMap">
+        select b.id as id,
+        b.title as book_title,
+        b.author as author,
+        ifnull(b_b.stock,b.number) as stock,
+        c.classname as class_name
+        from library.book as b
+        left join library.borrow_book as b_b
+        on b.id = b_b.id
+        left join library.class as c
+        on b.class = c.id
+        <where>
+            <if test="kindIndex!=null">
+                b.class = #{kindIndex}
+            </if>
+            <choose>
+                <when test="title!=null">
+                    and b.title like "%"#{title}"%"
+                </when>
+                <when test="author!=null">
+                    and b.author like "%"#{author}"%"
+                </when>
+                <otherwise>
+                    and
+                    (b.title like "%"#{noKindSelectText}"%"
+                    or
+                    b.author like "%"#{noKindSelectText}"%")
+                </otherwise>
+            </choose>
+        </where>
+        limit #{offset} , #{rows};
+
+    </select>
+
+    <select id="countLibraryBookAny" parameterType="Map" resultType="int">
+        select count(b.id)
+        from library.book as b
+        left join library.borrow_book as b_b
+        on b.id = b_b.id
+        left join library.class as c
+        on b.class = c.id
+        <where>
+            <if test="kindIndex!=null">
+                b.class = #{kindIndex}
+            </if>
+            <choose>
+                <when test="title!=null">
+                    and b.title like "%"#{title}"%"
+                </when>
+                <when test="author!=null">
+                    and b.author like "%"#{author}"%"
+                </when>
+                <otherwise>
+                    and
+                    (b.title like "%"#{noKindSelectText}"%"
+                    or
+                    b.author like "%"#{noKindSelectText}"%")
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+</mapper>

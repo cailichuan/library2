@@ -1,0 +1,72 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        max-age: 2D
+      timeout: 2D
+  tomcat:
+    uri-encoding: UTF-8
+
+
+
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/library?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #关闭thymeleaf缓存
+  thymeleaf:
+    cache: false
+  freemarker:
+    settings:
+      classic_compatible: true\
+  #redis
+  redis:
+    port: 6379
+
+  jackson:
+    date-format: yyyy-MM-dd
+
+  #邮箱
+  mail:
+    username: 848349974@qq.com
+    password: wlqopltmcsmwbcah
+    host: smtp.qq.com
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+
+
+#整合mybatis
+mybatis:
+  #类型别名的包路径
+  type-aliases-package: com.cai.library.dao
+  mapper-locations: classpath:mapper/*.xml,classpath:mapper/**/*.xml
+
+logging:
+  level:
+    com:
+      cai:
+        library:
+          mapper: debug
+
+
+
+  admin-url:
+    {
+      "/admin/books/{page}/img",
+      "/admin/books/{page}/select/{spage}/img",
+      "/admin/BBI/{page}/img",
+      "/admin/BBI/{page}/select/{spage}/img",
+      "/admin/UBI/{page}/img",
+      "/admin/UBI/{page}/select/{spage}/img",
+      "/admin/users/{page}/img",
+      "/admin/users/{page}/select/{spage}/img"
+    }
+
+
+
